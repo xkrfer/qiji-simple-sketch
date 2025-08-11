@@ -1,0 +1,122 @@
+{
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit",
+    "source.fixAll.stylelint": "explicit"
+  },
+  "explorer.fileNesting.enabled": true,
+  "explorer.fileNesting.expand": false,
+  "explorer.fileNesting.patterns": {
+    // 项目核心配置组 - 以 package.json 为主文件
+    "package.json": "pnpm-lock.yaml,yarn.lock,package-lock.json,npm-shrinkwrap.json,.npmrc,.yarnrc,.yarnrc.yml,pnpm-workspace.yaml,README.md,README.*.md,CHANGELOG.md,CONTRIBUTING.md,LICENSE,LICENSE.md,.github",
+
+    // 构建和工具配置组 - 以 vite.config.ts 为主文件
+    "vite.config.ts": ".prettierrc.json,.prettierignore,vite.config.*.ts,vitest.config.ts,vitest.config.*.ts,tsconfig.json,tsconfig.*.json,tsconfig.tsbuildinfo,eslint.config.js,.eslintrc.*,.eslintignore,eslint.config.*.js,tailwind.config.js,postcss.config.js,postcss.config.*.js,tailwind.config.*.js,Dockerfile,.dockerignore,docker-compose.yml,docker-compose.yaml,docker-compose.*.yml,docker-compose.*.yaml",
+
+    // 前端入口文件组
+    "index.html": "index.*.html,public",
+
+    // 版本控制配置组
+    ".gitignore": ".gitattributes,.gitmodules,.gitmessage,.mailmap,.git-blame-ignore-revs",
+
+    // 环境变量配置组
+    ".env": ".env.*,.envrc,.env.example,.env.sample,.env.template",
+
+    // TypeScript 声明文件组
+    "*.ts": "$(capture).d.ts,$(capture).test.ts,$(capture).spec.ts",
+    "*.tsx": "$(capture).d.ts,$(capture).test.tsx,$(capture).spec.tsx",
+
+    // 路由文件组
+    "router.tsx": "routeTree.gen.ts",
+
+    // 服务器构建产物组
+    "serve-node.ts": "serve-node.js",
+
+    // 组件提供者组
+    "index.tsx": "$(capture).provider.tsx,$(capture).context.tsx",
+
+    // 中间件组
+    "*.middleware.ts": "$(capture).middleware.*.ts",
+
+    // 工具函数组
+    "*.util.ts": "$(capture).util.*.ts",
+
+    // 样式文件组
+    "*.css": "$(capture).module.css,$(capture).*.css"
+  },
+  "files.exclude": {
+    // 构建产物和分发文件
+    "**/dist/**": true,
+    "**/build/**": false,
+    "**/out/**": true,
+    "**/lib/**": false,
+
+    // 依赖管理
+    "**/node_modules/**": true,
+    "**/.pnpm-store/**": true,
+    "**/.yarn/**": true,
+
+    // 包管理器缓存和锁文件（在开发时可能需要查看，所以设为false）
+    "**/pnpm-lock.yaml": false,
+    "**/yarn.lock": false,
+    "**/package-lock.json": false,
+
+    // TypeScript 构建缓存
+    "**/tsconfig.tsbuildinfo": true,
+    "**/*.tsbuildinfo": true,
+
+    // 工具缓存目录
+    "**/.cache/**": true,
+    "**/.temp/**": true,
+    "**/.tmp/**": true,
+    "**/.vite/**": true,
+    "**/.turbo/**": true,
+    "**/.next/**": true,
+    "**/.nuxt/**": true,
+    "**/.tanstack/**": true,
+
+    // 测试覆盖率报告
+    "**/coverage/**": true,
+    "**/.nyc_output/**": true,
+
+    // 日志文件
+    "**/*.log": true,
+    "**/logs/**": true,
+    "**/npm-debug.log*": true,
+    "**/yarn-debug.log*": true,
+    "**/yarn-error.log*": true,
+    "**/pnpm-debug.log*": true,
+    "**/lerna-debug.log*": true,
+
+    // 环境和临时文件
+    "**/.env.local": true,
+    "**/.env.*.local": true,
+    "**/*.local": true,
+
+    // 编辑器和IDE文件
+    "**/.idea/**": true,
+    "**/*.swp": true,
+    "**/*.swo": true,
+    "**/*~": true,
+
+    // 操作系统文件
+    "**/.DS_Store": true,
+    "**/Thumbs.db": true,
+    "**/desktop.ini": true,
+
+    // 版本控制
+    "**/.git/**": true,
+    "**/.svn/**": true,
+    "**/.hg/**": true,
+
+    // 其他开发工具生成的文件
+    "**/.eslintcache": true,
+    "**/.stylelintcache": true,
+    "**/.prettierignore": false,
+    "**/storybook-static/**": true,
+    "**/.storybook/public/**": true
+  }
+}
