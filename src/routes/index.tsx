@@ -35,7 +35,7 @@ function Index() {
   return (
     <div className="max-w-4xl mx-auto space-y-8">
       <div className="text-center space-y-4">
-        <h1 className="text-4xl font-bold text-gray-900 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+        <h1 className="text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text ">
           欢迎回家！
         </h1>
         <p className="text-lg text-gray-600">开始上传您的文件吧</p>
