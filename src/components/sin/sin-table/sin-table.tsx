@@ -24,19 +24,19 @@ import {
   TableRow,
 } from '@/components/ui/table';
 
-import { EnhancedTableRow } from './components/table-row';
-import { useTableDragging } from './hooks/use-table-dragging';
-import { useTableSelection } from './hooks/use-table-selection';
-import { EnhancedTableProps, ColumnConfig } from './types';
+import { SinTableRow } from './components';
+import { useSinTableDragging, useSinTableSelection } from './hooks';
+import { SinTableProps, SinTableColumnConfig } from './types';
+import { getSinTableVisibleColumns } from './utils';
 import {
-  getRowKey,
-  getVisibleColumns,
-  getCurrentBreakpoint,
-  classNames,
-} from './utils';
+  getSinRowKey,
+  getSinValueByDataIndex,
+  useSinResponsive,
+  sinClassNames,
+} from '../shared';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function EnhancedTable<T extends Record<string, any>>({
+export function SinTable<T extends Record<string, any>>({
   columns,
   dataSource,
   rowKey,
@@ -49,19 +49,9 @@ export function EnhancedTable<T extends Record<string, any>>({
   onChange,
   onRow,
   locale,
-}: EnhancedTableProps<T>) {
+}: SinTableProps<T>) {
   const [data, setData] = useState<T[]>(dataSource);
-  const [breakpoint, setBreakpoint] = useState(getCurrentBreakpoint());
-
-  // 响应式处理
-  useEffect(() => {
-    const handleResize = () => {
-      setBreakpoint(getCurrentBreakpoint());
-    };
-
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  const { breakpoint } = useSinResponsive();
 
   // 同步外部数据
   useEffect(() => {
@@ -69,7 +59,7 @@ export function EnhancedTable<T extends Record<string, any>>({
   }, [dataSource]);
 
   // 拖拽功能
-  const dragging = useTableDragging({
+  const dragging = useSinTableDragging({
     data,
     onDataChange: setData,
     draggable,
@@ -80,7 +70,7 @@ export function EnhancedTable<T extends Record<string, any>>({
   });
 
   // 选择功能
-  const selection = useTableSelection({
+  const selection = useSinTableSelection({
     data,
     rowSelection,
     rowKey,
@@ -96,12 +86,12 @@ export function EnhancedTable<T extends Record<string, any>>({
 
   // 计算可见列
   const visibleColumns = useMemo(() => {
-    return getVisibleColumns(columns, breakpoint);
+    return getSinTableVisibleColumns(columns, breakpoint);
   }, [columns, breakpoint]);
 
   // 添加选择列和拖拽列
   const finalColumns = useMemo(() => {
-    const cols: ColumnConfig<T>[] = [];
+    const cols: SinTableColumnConfig<T>[] = [];
 
     // 选择列
     if (selection.isEnabled) {
@@ -145,7 +135,7 @@ export function EnhancedTable<T extends Record<string, any>>({
         {finalColumns.map((column) => (
           <TableHead
             key={column.key}
-            className={classNames(
+            className={sinClassNames(
               column.align === 'center' && 'text-center',
               column.align === 'right' && 'text-right',
               column.className
@@ -189,13 +179,13 @@ export function EnhancedTable<T extends Record<string, any>>({
     }
 
     return data.map((record, index) => {
-      const key = getRowKey(record, index, rowKey);
+      const key = getSinRowKey(record, index, rowKey);
       const isSelected = selection.isRowSelected(record, index);
       const checkboxProps = selection.getRowCheckboxProps(record);
       const rowEventHandlers = onRow?.(record, index);
 
       return (
-        <EnhancedTableRow
+        <SinTableRow
           key={key}
           record={record}
           index={index}
@@ -222,7 +212,8 @@ export function EnhancedTable<T extends Record<string, any>>({
     if (!dragging.activeId) return null;
 
     const activeRecord = data.find(
-      (record, index) => getRowKey(record, index, rowKey) === dragging.activeId
+      (record, index) =>
+        getSinRowKey(record, index, rowKey) === dragging.activeId
     );
 
     if (!activeRecord) return null;
@@ -240,7 +231,7 @@ export function EnhancedTable<T extends Record<string, any>>({
             </TableRow>
           </TableHeader>
           <TableBody>
-            <EnhancedTableRow
+            <SinTableRow
               record={activeRecord}
               index={0}
               columns={visibleColumns}
@@ -256,7 +247,7 @@ export function EnhancedTable<T extends Record<string, any>>({
 
   const tableContent = (
     <div
-      className={classNames(
+      className={sinClassNames(
         'relative bg-white dark:bg-gray-900 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden',
         className
       )}
@@ -282,7 +273,9 @@ export function EnhancedTable<T extends Record<string, any>>({
         modifiers={[restrictToVerticalAxis]}
       >
         <SortableContext
-          items={data.map((record, index) => getRowKey(record, index, rowKey))}
+          items={data.map((record, index) =>
+            getSinRowKey(record, index, rowKey)
+          )}
           strategy={verticalListSortingStrategy}
         >
           {tableContent}

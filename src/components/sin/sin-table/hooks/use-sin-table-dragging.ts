@@ -3,29 +3,29 @@ import { useState, useCallback, useMemo } from 'react';
 
 import { DragEndEvent, DragStartEvent } from '@dnd-kit/core';
 
-import { DraggableConfig, DragResult } from '../types';
-import { arrayMove } from '../utils';
+import { SinTableDraggableConfig, SinTableDragResult } from '../types';
+import { sinArrayMove } from '../../shared';
 
-export interface UseTableDraggingProps<T> {
+export interface UseSinTableDraggingProps<T> {
   data: T[];
   onDataChange: (newData: T[]) => void;
-  draggable?: boolean | DraggableConfig;
-  onDragEnd?: (result: DragResult<T>) => void;
+  draggable?: boolean | SinTableDraggableConfig;
+  onDragEnd?: (result: SinTableDragResult<T>) => void;
 }
 
-export function useTableDragging<T>({
+export function useSinTableDragging<T>({
   data,
   onDataChange,
   draggable,
   onDragEnd,
-}: UseTableDraggingProps<T>) {
+}: UseSinTableDraggingProps<T>) {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
 
   const isEnabled =
     draggable === true ||
     (typeof draggable === 'object' && draggable.enabled !== false);
-  // const draggableConfig = typeof draggable === 'object' ? draggable : {};
+
   const draggableConfig = useMemo(() => {
     return typeof draggable === 'object' ? draggable : {};
   }, [draggable]);
@@ -60,9 +60,9 @@ export function useTableDragging<T>({
         );
 
         if (oldIndex !== -1 && newIndex !== -1) {
-          const newData = arrayMove(data, oldIndex, newIndex);
+          const newData = sinArrayMove(data, oldIndex, newIndex);
 
-          const dragResult: DragResult<T> = {
+          const dragResult: SinTableDragResult<T> = {
             oldIndex,
             newIndex,
             item: data[oldIndex] as T,

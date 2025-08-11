@@ -2,21 +2,21 @@ import React from 'react';
 
 import { GripVertical } from 'lucide-react';
 
-import { classNames } from '../utils';
+import { SinComponentSize, sinClassNames } from '../../shared';
 
-export interface DragHandleProps {
+export interface SinDragHandleProps {
   className?: string;
-  size?: 'small' | 'default' | 'large';
+  size?: SinComponentSize;
   disabled?: boolean;
   style?: React.CSSProperties;
 }
 
-export function DragHandle({
+export function SinDragHandle({
   className,
   size = 'default',
   disabled = false,
   style,
-}: DragHandleProps) {
+}: SinDragHandleProps) {
   const sizeMap = {
     small: 'h-3 w-3',
     default: 'h-4 w-4',
@@ -25,7 +25,7 @@ export function DragHandle({
 
   return (
     <div
-      className={classNames(
+      className={sinClassNames(
         'inline-flex items-center justify-center p-1 rounded cursor-grab active:cursor-grabbing transition-colors',
         disabled
           ? 'text-gray-300 cursor-not-allowed'
@@ -34,7 +34,7 @@ export function DragHandle({
       )}
       style={style}
     >
-      <GripVertical className={classNames(sizeMap[size])} />
+      <GripVertical className={sinClassNames(sizeMap[size])} />
     </div>
   );
 }

@@ -1,31 +1,24 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ReactNode } from 'react';
 
-// 基础数据类型
-export type RowKey = string | number;
-
-// 响应式断点
-export type ResponsiveBreakpoint = 'sm' | 'md' | 'lg' | 'xl';
+import {
+  SinRowKey,
+  SinResponsiveBreakpoint,
+  SinComponentSize,
+  SinRowEventHandlers,
+  SinBaseComponentProps,
+} from '../shared';
 
 // 拖拽结果
-export interface DragResult<T = any> {
+export interface SinTableDragResult<T = any> {
   oldIndex: number;
   newIndex: number;
   item: T;
   items: T[];
 }
 
-// 行事件处理器
-export interface RowEventHandlers {
-  onClick?: (event: React.MouseEvent) => void;
-  onDoubleClick?: (event: React.MouseEvent) => void;
-  onContextMenu?: (event: React.MouseEvent) => void;
-  onMouseEnter?: (event: React.MouseEvent) => void;
-  onMouseLeave?: (event: React.MouseEvent) => void;
-}
-
 // 列配置
-export interface ColumnConfig<T = any> {
+export interface SinTableColumnConfig<T = any> {
   key: string;
   title: ReactNode;
   dataIndex?: keyof T;
@@ -43,7 +36,7 @@ export interface ColumnConfig<T = any> {
   fixed?: 'left' | 'right';
 
   // 响应式
-  responsive?: ResponsiveBreakpoint[];
+  responsive?: SinResponsiveBreakpoint[];
 
   // 样式
   align?: 'left' | 'center' | 'right';
@@ -52,20 +45,20 @@ export interface ColumnConfig<T = any> {
 }
 
 // 拖拽配置
-export interface DraggableConfig {
+export interface SinTableDraggableConfig {
   enabled?: boolean;
   handle?: string; // CSS选择器
   disabled?: boolean;
   onDragStart?: (event: any) => void;
-  onDragEnd?: (result: DragResult) => void;
+  onDragEnd?: (result: SinTableDragResult) => void;
 }
 
 // 行选择配置
-export interface RowSelectionConfig<T = any> {
+export interface SinTableRowSelectionConfig<T = any> {
   type?: 'checkbox' | 'radio';
-  selectedRowKeys?: RowKey[];
-  defaultSelectedRowKeys?: RowKey[];
-  onChange?: (selectedRowKeys: RowKey[], selectedRows: T[]) => void;
+  selectedRowKeys?: SinRowKey[];
+  defaultSelectedRowKeys?: SinRowKey[];
+  onChange?: (selectedRowKeys: SinRowKey[], selectedRows: T[]) => void;
   onSelect?: (
     record: T,
     selected: boolean,
@@ -79,7 +72,7 @@ export interface RowSelectionConfig<T = any> {
 }
 
 // 分页配置
-export interface PaginationConfig {
+export interface SinTablePaginationConfig {
   current?: number;
   pageSize?: number;
   total?: number;
@@ -91,9 +84,9 @@ export interface PaginationConfig {
 }
 
 // 可展开配置
-export interface ExpandableConfig<T = any> {
-  expandedRowKeys?: RowKey[];
-  defaultExpandedRowKeys?: RowKey[];
+export interface SinTableExpandableConfig<T = any> {
+  expandedRowKeys?: SinRowKey[];
+  defaultExpandedRowKeys?: SinRowKey[];
   expandedRowRender?: (
     record: T,
     index: number,
@@ -103,54 +96,46 @@ export interface ExpandableConfig<T = any> {
   expandRowByClick?: boolean;
   expandIcon?: (props: any) => ReactNode;
   onExpand?: (expanded: boolean, record: T) => void;
-  onExpandedRowsChange?: (expandedKeys: RowKey[]) => void;
+  onExpandedRowsChange?: (expandedKeys: SinRowKey[]) => void;
 }
 
 // 滚动配置
-export interface ScrollConfig {
+export interface SinTableScrollConfig {
   x?: number | string | true;
   y?: number | string;
   scrollToFirstRowOnChange?: boolean;
 }
 
 // 主组件Props
-export interface EnhancedTableProps<T = any> {
+export interface SinTableProps<T = any> extends SinBaseComponentProps {
   // 基础数据
-  columns: ColumnConfig<T>[];
+  columns: SinTableColumnConfig<T>[];
   dataSource: T[];
-  rowKey?: keyof T | ((record: T) => RowKey);
+  rowKey?: keyof T | ((record: T) => SinRowKey);
 
   // 功能开关
-  draggable?: boolean | DraggableConfig;
-  rowSelection?: RowSelectionConfig<T>;
-  pagination?: boolean | PaginationConfig;
+  draggable?: boolean | SinTableDraggableConfig;
+  rowSelection?: SinTableRowSelectionConfig<T>;
+  pagination?: boolean | SinTablePaginationConfig;
 
   // 样式和布局
-  size?: 'default' | 'small' | 'large';
   bordered?: boolean;
-  loading?: boolean;
-  className?: string;
 
   // 事件回调
   onChange?: (pagination: any, filters: any, sorter: any) => void;
-  onRow?: (record: T, index: number) => RowEventHandlers;
+  onRow?: (record: T, index: number) => SinRowEventHandlers;
 
   // 高级功能
-  expandable?: ExpandableConfig<T>;
-  scroll?: ScrollConfig;
+  expandable?: SinTableExpandableConfig<T>;
+  scroll?: SinTableScrollConfig;
   virtual?: boolean;
-
-  // 空状态
-  locale?: {
-    emptyText?: ReactNode;
-  };
 }
 
 // 内部状态类型
-export interface TableState<T = any> {
+export interface SinTableState<T = any> {
   data: T[];
-  selectedRowKeys: RowKey[];
-  expandedRowKeys: RowKey[];
+  selectedRowKeys: SinRowKey[];
+  expandedRowKeys: SinRowKey[];
   sortInfo: {
     columnKey?: string;
     order?: 'ascend' | 'descend';

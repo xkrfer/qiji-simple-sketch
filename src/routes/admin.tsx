@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { createFileRoute } from '@tanstack/react-router';
 import { Circle, AlertCircle, CheckCircle } from 'lucide-react';
 
-import { EnhancedTable, ColumnConfig } from '@/components/enhanced-table';
+import { SinTable, SinTableColumnConfig } from '@/components/sin';
 import { Badge } from '@/components/ui/badge';
 import { api } from '@/trpc';
 
@@ -50,7 +50,7 @@ function DraggableTable() {
   }, [data]);
 
   // 定义表格列配置
-  const columns: ColumnConfig<TableItem>[] = [
+  const columns: SinTableColumnConfig<TableItem>[] = [
     {
       key: 'name',
       title: '项目名称',
@@ -113,7 +113,7 @@ function DraggableTable() {
         </p>
       </div>
 
-      <EnhancedTable
+      <SinTable
         columns={columns}
         dataSource={items}
         rowKey="id"

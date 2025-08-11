@@ -5,16 +5,23 @@ import { CSS } from '@dnd-kit/utilities';
 
 import { TableRow as UITableRow, TableCell } from '@/components/ui/table';
 
-import { ColumnConfig, RowEventHandlers, RowKey } from '../types';
-import { getRowKey, getValueByDataIndex, classNames } from '../utils';
+import { SinTableColumnConfig } from '../types';
+import {
+  SinRowEventHandlers,
+  SinRowKey,
+  SinComponentSize,
+  getSinRowKey,
+  getSinValueByDataIndex,
+  sinClassNames,
+} from '../../shared';
 
-import { DragHandle } from './drag-handle';
+import { SinDragHandle } from './sin-drag-handle';
 
-export interface EnhancedTableRowProps<T> {
+export interface SinTableRowProps<T> {
   record: T;
   index: number;
-  columns: ColumnConfig<T>[];
-  rowKey?: keyof T | ((record: T) => RowKey);
+  columns: SinTableColumnConfig<T>[];
+  rowKey?: keyof T | ((record: T) => SinRowKey);
 
   // 拖拽相关
   draggable?: boolean;
@@ -28,14 +35,14 @@ export interface EnhancedTableRowProps<T> {
   checkboxProps?: { disabled?: boolean; name?: string };
 
   // 事件处理
-  onRow?: RowEventHandlers;
+  onRow?: SinRowEventHandlers;
 
   // 样式
   className?: string;
-  size?: 'small' | 'default' | 'large';
+  size?: SinComponentSize;
 }
 
-export function EnhancedTableRow<T>({
+export function SinTableRow<T>({
   record,
   index,
   columns,
@@ -50,8 +57,8 @@ export function EnhancedTableRow<T>({
   onRow,
   className,
   size = 'default',
-}: EnhancedTableRowProps<T>) {
-  const key = getRowKey(record, index, rowKey);
+}: SinTableRowProps<T>) {
+  const key = getSinRowKey(record, index, rowKey);
 
   // 拖拽功能
   const sortable = useSortable({
@@ -104,7 +111,7 @@ export function EnhancedTableRow<T>({
     return (
       <TableCell className="w-12 text-center">
         <div {...attributes} {...listeners}>
-          <DragHandle size={size} disabled={checkboxProps.disabled} />
+          <SinDragHandle size={size} disabled={checkboxProps.disabled} />
         </div>
       </TableCell>
     );
@@ -112,7 +119,7 @@ export function EnhancedTableRow<T>({
 
   const renderDataCells = () => {
     return columns.map((column) => {
-      const value = getValueByDataIndex(record, column.dataIndex);
+      const value = getSinValueByDataIndex(record, column.dataIndex);
       const cellContent = column.render
         ? column.render(value, record, index)
         : value;
@@ -120,7 +127,7 @@ export function EnhancedTableRow<T>({
       return (
         <TableCell
           key={column.key}
-          className={classNames(
+          className={sinClassNames(
             column.align === 'center' && 'text-center',
             column.align === 'right' && 'text-right',
             column.ellipsis && 'truncate max-w-xs',
@@ -142,7 +149,7 @@ export function EnhancedTableRow<T>({
     <UITableRow
       ref={setNodeRef}
       style={style}
-      className={classNames(
+      className={sinClassNames(
         'transition-all duration-200',
         isDragging || isSortableDragging
           ? 'bg-gray-100 dark:bg-gray-700 ring-inset ring-2 ring-blue-400 dark:ring-blue-500'

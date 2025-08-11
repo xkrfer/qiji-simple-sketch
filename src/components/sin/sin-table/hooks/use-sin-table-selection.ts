@@ -1,20 +1,20 @@
 import { useState, useCallback, useMemo } from 'react';
 
-import { RowKey, RowSelectionConfig } from '../types';
-import { getRowKey } from '../utils';
+import { SinTableRowSelectionConfig } from '../types';
+import { SinRowKey, getSinRowKey } from '../../shared';
 
-export interface UseTableSelectionProps<T> {
+export interface UseSinTableSelectionProps<T> {
   data: T[];
-  rowSelection?: RowSelectionConfig<T>;
-  rowKey?: keyof T | ((record: T) => RowKey);
+  rowSelection?: SinTableRowSelectionConfig<T>;
+  rowKey?: keyof T | ((record: T) => SinRowKey);
 }
 
-export function useTableSelection<T>({
+export function useSinTableSelection<T>({
   data,
   rowSelection,
   rowKey,
-}: UseTableSelectionProps<T>) {
-  const [selectedRowKeys, setSelectedRowKeys] = useState<RowKey[]>(
+}: UseSinTableSelectionProps<T>) {
+  const [selectedRowKeys, setSelectedRowKeys] = useState<SinRowKey[]>(
     rowSelection?.selectedRowKeys || rowSelection?.defaultSelectedRowKeys || []
   );
 
@@ -26,7 +26,7 @@ export function useTableSelection<T>({
     if (!isEnabled) return [];
 
     return data.filter((record, index) => {
-      const key = getRowKey(record, index, rowKey);
+      const key = getSinRowKey(record, index, rowKey);
       return selectedRowKeys.includes(key);
     });
   }, [data, selectedRowKeys, rowKey, isEnabled]);
@@ -36,7 +36,7 @@ export function useTableSelection<T>({
     if (!isEnabled || data.length === 0) return false;
 
     const allKeys = data.map((record, index) =>
-      getRowKey(record, index, rowKey)
+      getSinRowKey(record, index, rowKey)
     );
     return allKeys.every((key) => selectedRowKeys.includes(key));
   }, [data, selectedRowKeys, rowKey, isEnabled]);
@@ -52,8 +52,8 @@ export function useTableSelection<T>({
     (record: T, index: number, selected: boolean, nativeEvent: Event) => {
       if (!isEnabled) return;
 
-      const key = getRowKey(record, index, rowKey);
-      let newSelectedRowKeys: RowKey[];
+      const key = getSinRowKey(record, index, rowKey);
+      let newSelectedRowKeys: SinRowKey[];
 
       if (selectionType === 'radio') {
         // 单选模式
@@ -70,7 +70,7 @@ export function useTableSelection<T>({
       setSelectedRowKeys(newSelectedRowKeys);
 
       const newSelectedRows = data.filter((record, index) => {
-        const key = getRowKey(record, index, rowKey);
+        const key = getSinRowKey(record, index, rowKey);
         return newSelectedRowKeys.includes(key);
       });
 
@@ -86,29 +86,29 @@ export function useTableSelection<T>({
     (selected: boolean) => {
       if (!isEnabled) return;
 
-      let newSelectedRowKeys: RowKey[];
+      let newSelectedRowKeys: SinRowKey[];
       let changeRows: T[];
 
       if (selected) {
         // 全选
         const allKeys = data.map((record, index) =>
-          getRowKey(record, index, rowKey)
+          getSinRowKey(record, index, rowKey)
         );
         newSelectedRowKeys = [...new Set([...selectedRowKeys, ...allKeys])];
         changeRows = data.filter((record, index) => {
-          const key = getRowKey(record, index, rowKey);
+          const key = getSinRowKey(record, index, rowKey);
           return !selectedRowKeys.includes(key);
         });
       } else {
         // 取消全选
         const allKeys = data.map((record, index) =>
-          getRowKey(record, index, rowKey)
+          getSinRowKey(record, index, rowKey)
         );
         newSelectedRowKeys = selectedRowKeys.filter(
           (key) => !allKeys.includes(key)
         );
         changeRows = data.filter((record, index) => {
-          const key = getRowKey(record, index, rowKey);
+          const key = getSinRowKey(record, index, rowKey);
           return selectedRowKeys.includes(key);
         });
       }
@@ -116,7 +116,7 @@ export function useTableSelection<T>({
       setSelectedRowKeys(newSelectedRowKeys);
 
       const newSelectedRows = data.filter((record, index) => {
-        const key = getRowKey(record, index, rowKey);
+        const key = getSinRowKey(record, index, rowKey);
         return newSelectedRowKeys.includes(key);
       });
 
@@ -131,7 +131,7 @@ export function useTableSelection<T>({
   const isRowSelected = useCallback(
     (record: T, index: number) => {
       if (!isEnabled) return false;
-      const key = getRowKey(record, index, rowKey);
+      const key = getSinRowKey(record, index, rowKey);
       return selectedRowKeys.includes(key);
     },
     [selectedRowKeys, rowKey, isEnabled]
@@ -155,12 +155,12 @@ export function useTableSelection<T>({
 
   // 设置选中的行
   const setSelection = useCallback(
-    (keys: RowKey[]) => {
+    (keys: SinRowKey[]) => {
       if (!isEnabled) return;
       setSelectedRowKeys(keys);
 
       const newSelectedRows = data.filter((record, index) => {
-        const key = getRowKey(record, index, rowKey);
+        const key = getSinRowKey(record, index, rowKey);
         return keys.includes(key);
       });
 
