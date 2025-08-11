@@ -1,37 +1,10 @@
 import { useState, useEffect } from 'react';
 
-import {
-  DndContext,
-  closestCenter,
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors,
-  DragEndEvent,
-  DragStartEvent,
-  DragOverlay,
-} from '@dnd-kit/core';
-import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
-import {
-  arrayMove,
-  SortableContext,
-  sortableKeyboardCoordinates,
-  verticalListSortingStrategy,
-  useSortable,
-} from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
 import { createFileRoute } from '@tanstack/react-router';
-import { GripVertical, Circle, AlertCircle, CheckCircle } from 'lucide-react';
+import { Circle, AlertCircle, CheckCircle } from 'lucide-react';
 
+import { EnhancedTable, ColumnConfig } from '@/components/enhanced-table';
 import { Badge } from '@/components/ui/badge';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
 import { api } from '@/trpc';
 
 export const Route = createFileRoute('/admin')({
@@ -65,7 +38,6 @@ function AdminLayout() {
 
 function DraggableTable() {
   const [items, setItems] = useState<TableItem[]>([]);
-  const [activeId, setActiveId] = useState<string | null>(null);
 
   // 获取表格数据
   const { data, isLoading } = api.todo.getTableData.useQuery();
@@ -77,45 +49,62 @@ function DraggableTable() {
     }
   }, [data]);
 
-  // 配置拖拽传感器
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    })
-  );
-
-  // 处理拖拽开始
-  function handleDragStart(event: DragStartEvent) {
-    setActiveId(event.active.id as string);
-  }
-
-  // 处理拖拽结束
-  function handleDragEnd(event: DragEndEvent) {
-    const { active, over } = event;
-
-    if (active.id !== over?.id) {
-      setItems((items) => {
-        const oldIndex = items.findIndex((item) => item.id === active.id);
-        const newIndex = items.findIndex((item) => item.id === over?.id);
-        return arrayMove(items, oldIndex, newIndex);
-      });
-    }
-
-    setActiveId(null);
-  }
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
-      </div>
-    );
-  }
+  // 定义表格列配置
+  const columns: ColumnConfig<TableItem>[] = [
+    {
+      key: 'name',
+      title: '项目名称',
+      dataIndex: 'name',
+      minWidth: 200,
+      render: (value) => (
+        <span className="font-medium text-gray-900 dark:text-gray-100">
+          {value}
+        </span>
+      ),
+    },
+    {
+      key: 'status',
+      title: '状态',
+      dataIndex: 'status',
+      minWidth: 100,
+      render: (value) => <StatusBadge status={value} />,
+    },
+    {
+      key: 'priority',
+      title: '优先级',
+      dataIndex: 'priority',
+      minWidth: 80,
+      render: (value) => <PriorityBadge priority={value} />,
+    },
+    {
+      key: 'createdAt',
+      title: '创建时间',
+      dataIndex: 'createdAt',
+      minWidth: 120,
+      responsive: ['sm'],
+      render: (value: Date) => (
+        <span className="text-sm text-muted-foreground">
+          {value.toLocaleDateString('zh-CN')}
+        </span>
+      ),
+    },
+    {
+      key: 'description',
+      title: '描述',
+      dataIndex: 'description',
+      minWidth: 200,
+      responsive: ['md'],
+      render: (value) => (
+        <span className="text-sm text-muted-foreground max-w-xs truncate">
+          {value}
+        </span>
+      ),
+    },
+  ];
 
   return (
-    <div className="relative bg-white dark:bg-gray-900 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
-      <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+    <div className="space-y-4">
+      <div className="p-4 bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700">
         <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
           项目管理表格
         </h3>
@@ -124,113 +113,17 @@ function DraggableTable() {
         </p>
       </div>
 
-      <DndContext
-        sensors={sensors}
-        collisionDetection={closestCenter}
-        onDragStart={handleDragStart}
-        onDragEnd={handleDragEnd}
-        modifiers={[restrictToVerticalAxis]}
-      >
-        <SortableContext
-          items={items.map((item) => item.id)}
-          strategy={verticalListSortingStrategy}
-        >
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow className="border-gray-200 dark:border-gray-700">
-                  <TableHead className="w-12 text-center">排序</TableHead>
-                  <TableHead className="min-w-[200px]">项目名称</TableHead>
-                  <TableHead className="min-w-[100px]">状态</TableHead>
-                  <TableHead className="min-w-[80px]">优先级</TableHead>
-                  <TableHead className="min-w-[120px] hidden sm:table-cell">
-                    创建时间
-                  </TableHead>
-                  <TableHead className="min-w-[200px] hidden md:table-cell">
-                    描述
-                  </TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {items.map((item) => (
-                  <SortableRow key={item.id} item={item} />
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-        </SortableContext>
-        <DragOverlay>
-          {activeId ? (
-            <div className="w-full" style={{ opacity: 0 }}>
-              {/* 完全透明 */}
-              <Table>
-                <TableHeader>{/* 表头内容 */}</TableHeader>
-                <TableBody>
-                  <SortableRow
-                    item={items.find((item) => item.id === activeId)!}
-                  />
-                </TableBody>
-              </Table>
-            </div>
-          ) : null}
-        </DragOverlay>
-      </DndContext>
+      <EnhancedTable
+        columns={columns}
+        dataSource={items}
+        rowKey="id"
+        draggable={true}
+        loading={isLoading}
+        locale={{
+          emptyText: '暂无数据',
+        }}
+      />
     </div>
-  );
-}
-
-function SortableRow({ item }: { item: TableItem }) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id: item.id });
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    // opacity: isDragging ? 0 : 1,
-    opacity: 1,
-  };
-
-  return (
-    <TableRow
-      ref={setNodeRef}
-      style={style}
-      className={`
-        ${isDragging ? 'bg-gray-100 dark:bg-gray-700 ring-inset ring-2 ring-blue-400 dark:ring-blue-500' : ''} 
-        transition-all duration-200 hover:bg-gray-50 dark:hover:bg-gray-800
-        border-gray-200 dark:border-gray-700
-      `}
-    >
-      <TableCell className="text-center">
-        <button
-          {...attributes}
-          {...listeners}
-          className="p-1 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 cursor-grab active:cursor-grabbing transition-colors"
-        >
-          <GripVertical className="h-4 w-4" />
-        </button>
-      </TableCell>
-      <TableCell className="font-medium text-gray-900 dark:text-gray-100">
-        {item.name}
-      </TableCell>
-      <TableCell>
-        <StatusBadge status={item.status} />
-      </TableCell>
-      <TableCell>
-        <PriorityBadge priority={item.priority} />
-      </TableCell>
-      <TableCell className="text-sm text-muted-foreground hidden sm:table-cell">
-        {item.createdAt.toLocaleDateString('zh-CN')}
-      </TableCell>
-      <TableCell className="text-sm text-muted-foreground max-w-xs truncate hidden md:table-cell">
-        {item.description}
-      </TableCell>
-    </TableRow>
   );
 }
 
