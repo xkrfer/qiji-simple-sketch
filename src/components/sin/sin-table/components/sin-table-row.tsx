@@ -5,7 +5,6 @@ import { CSS } from '@dnd-kit/utilities';
 
 import { TableRow as UITableRow, TableCell } from '@/components/ui/table';
 
-import { SinTableColumnConfig } from '../types';
 import {
   SinRowEventHandlers,
   SinRowKey,
@@ -14,6 +13,7 @@ import {
   getSinValueByDataIndex,
   sinClassNames,
 } from '../../shared';
+import { SinTableColumnConfig } from '../types';
 
 import { SinDragHandle } from './sin-drag-handle';
 

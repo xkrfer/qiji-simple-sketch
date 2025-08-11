@@ -4,7 +4,6 @@ import { ReactNode } from 'react';
 import {
   SinRowKey,
   SinResponsiveBreakpoint,
-  SinComponentSize,
   SinRowEventHandlers,
   SinBaseComponentProps,
 } from '../shared';

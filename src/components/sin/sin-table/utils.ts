@@ -1,5 +1,6 @@
-import { SinTableColumnConfig } from './types';
 import { SinResponsiveBreakpoint, getSinCurrentBreakpoint } from '../shared';
+
+import { SinTableColumnConfig } from './types';
 
 /**
  * 根据响应式配置过滤列

@@ -1,7 +1,7 @@
 import { useState, useCallback, useMemo } from 'react';
 
-import { SinTableRowSelectionConfig } from '../types';
 import { SinRowKey, getSinRowKey } from '../../shared';
+import { SinTableRowSelectionConfig } from '../types';
 
 export interface UseSinTableSelectionProps<T> {
   data: T[];

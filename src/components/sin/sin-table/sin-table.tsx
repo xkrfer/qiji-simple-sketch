@@ -24,16 +24,12 @@ import {
   TableRow,
 } from '@/components/ui/table';
 
+import { getSinRowKey, useSinResponsive, sinClassNames } from '../shared';
+
 import { SinTableRow } from './components';
 import { useSinTableDragging, useSinTableSelection } from './hooks';
 import { SinTableProps, SinTableColumnConfig } from './types';
 import { getSinTableVisibleColumns } from './utils';
-import {
-  getSinRowKey,
-  getSinValueByDataIndex,
-  useSinResponsive,
-  sinClassNames,
-} from '../shared';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function SinTable<T extends Record<string, any>>({

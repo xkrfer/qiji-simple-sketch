@@ -3,8 +3,8 @@ import { useState, useCallback, useMemo } from 'react';
 
 import { DragEndEvent, DragStartEvent } from '@dnd-kit/core';
 
-import { SinTableDraggableConfig, SinTableDragResult } from '../types';
 import { sinArrayMove } from '../../shared';
+import { SinTableDraggableConfig, SinTableDragResult } from '../types';
 
 export interface UseSinTableDraggingProps<T> {
   data: T[];
