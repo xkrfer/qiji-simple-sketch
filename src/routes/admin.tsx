@@ -161,8 +161,16 @@ function DraggableTable() {
         </SortableContext>
         <DragOverlay>
           {activeId ? (
-            <div className="opacity-95">
-              <SortableRow item={items.find((item) => item.id === activeId)!} />
+            <div className="w-full" style={{ opacity: 0 }}>
+              {/* 完全透明 */}
+              <Table>
+                <TableHeader>{/* 表头内容 */}</TableHeader>
+                <TableBody>
+                  <SortableRow
+                    item={items.find((item) => item.id === activeId)!}
+                  />
+                </TableBody>
+              </Table>
             </div>
           ) : null}
         </DragOverlay>
@@ -184,6 +192,8 @@ function SortableRow({ item }: { item: TableItem }) {
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
+    // opacity: isDragging ? 0 : 1,
+    opacity: 1,
   };
 
   return (
@@ -191,7 +201,7 @@ function SortableRow({ item }: { item: TableItem }) {
       ref={setNodeRef}
       style={style}
       className={`
-        ${isDragging ? 'opacity-50 bg-blue-50 dark:bg-blue-900/20' : ''} 
+        ${isDragging ? 'bg-gray-100 dark:bg-gray-700 ring-inset ring-2 ring-blue-400 dark:ring-blue-500' : ''} 
         transition-all duration-200 hover:bg-gray-50 dark:hover:bg-gray-800
         border-gray-200 dark:border-gray-700
       `}
