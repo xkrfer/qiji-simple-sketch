@@ -1,5 +1,7 @@
 import React from 'react';
+
 import { GripVertical } from 'lucide-react';
+
 import { classNames } from '../utils';
 
 export interface DragHandleProps {

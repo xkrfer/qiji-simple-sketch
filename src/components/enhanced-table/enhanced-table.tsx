@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
+
 import {
   DndContext,
   closestCenter,
@@ -34,6 +35,7 @@ import {
   classNames,
 } from './utils';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function EnhancedTable<T extends Record<string, any>>({
   columns,
   dataSource,
@@ -42,13 +44,11 @@ export function EnhancedTable<T extends Record<string, any>>({
   rowSelection,
   pagination = false,
   size = 'default',
-  bordered = false,
   loading = false,
   className,
   onChange,
   onRow,
   locale,
-  ...rest
 }: EnhancedTableProps<T>) {
   const [data, setData] = useState<T[]>(dataSource);
   const [breakpoint, setBreakpoint] = useState(getCurrentBreakpoint());
@@ -73,7 +73,7 @@ export function EnhancedTable<T extends Record<string, any>>({
     data,
     onDataChange: setData,
     draggable,
-    onDragEnd: (result) => {
+    onDragEnd: () => {
       // 可以在这里触发 onChange 回调
       onChange?.(pagination, {}, {});
     },
@@ -116,9 +116,7 @@ export function EnhancedTable<T extends Record<string, any>>({
               ref={(input) => {
                 if (input) input.indeterminate = selection.isIndeterminate;
               }}
-              onChange={(e) =>
-                selection.handleSelectAll(e.target.checked, e.nativeEvent)
-              }
+              onChange={(e) => selection.handleSelectAll(e.target.checked)}
               className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
             />
           ) : (

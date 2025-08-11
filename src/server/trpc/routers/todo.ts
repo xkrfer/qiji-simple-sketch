@@ -4,7 +4,7 @@ import { zfd } from 'zod-form-data';
 import { createTRPCRouter, protectedProcedure } from '../trpc';
 
 // Mock数据存储
-let tableData = [
+const tableData = [
   {
     id: '1',
     name: '用户管理系统',

@@ -1,7 +1,10 @@
-import { useState, useCallback } from 'react';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useState, useCallback, useMemo } from 'react';
+
 import { DragEndEvent, DragStartEvent } from '@dnd-kit/core';
-import { arrayMove } from '../utils';
+
 import { DraggableConfig, DragResult } from '../types';
+import { arrayMove } from '../utils';
 
 export interface UseTableDraggingProps<T> {
   data: T[];
@@ -22,7 +25,10 @@ export function useTableDragging<T>({
   const isEnabled =
     draggable === true ||
     (typeof draggable === 'object' && draggable.enabled !== false);
-  const draggableConfig = typeof draggable === 'object' ? draggable : {};
+  // const draggableConfig = typeof draggable === 'object' ? draggable : {};
+  const draggableConfig = useMemo(() => {
+    return typeof draggable === 'object' ? draggable : {};
+  }, [draggable]);
 
   const handleDragStart = useCallback(
     (event: DragStartEvent) => {
@@ -59,7 +65,7 @@ export function useTableDragging<T>({
           const dragResult: DragResult<T> = {
             oldIndex,
             newIndex,
-            item: data[oldIndex],
+            item: data[oldIndex] as T,
             items: newData,
           };
 

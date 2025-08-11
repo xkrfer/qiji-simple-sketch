@@ -1,10 +1,14 @@
 import React from 'react';
+
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+
 import { TableRow as UITableRow, TableCell } from '@/components/ui/table';
-import { DragHandle } from './drag-handle';
+
 import { ColumnConfig, RowEventHandlers, RowKey } from '../types';
 import { getRowKey, getValueByDataIndex, classNames } from '../utils';
+
+import { DragHandle } from './drag-handle';
 
 export interface EnhancedTableRowProps<T> {
   record: T;
@@ -128,7 +132,7 @@ export function EnhancedTableRow<T>({
             maxWidth: column.maxWidth,
           }}
         >
-          {cellContent}
+          {cellContent as React.ReactNode}
         </TableCell>
       );
     });

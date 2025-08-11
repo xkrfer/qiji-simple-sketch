@@ -1,4 +1,5 @@
 import { useState, useCallback, useMemo } from 'react';
+
 import { RowKey, RowSelectionConfig } from '../types';
 import { getRowKey } from '../utils';
 
@@ -82,7 +83,7 @@ export function useTableSelection<T>({
 
   // 处理全选
   const handleSelectAll = useCallback(
-    (selected: boolean, nativeEvent: Event) => {
+    (selected: boolean) => {
       if (!isEnabled) return;
 
       let newSelectedRowKeys: RowKey[];
