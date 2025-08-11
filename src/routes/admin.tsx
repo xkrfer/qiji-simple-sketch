@@ -8,7 +8,10 @@ import {
   useSensor,
   useSensors,
   DragEndEvent,
+  DragStartEvent,
+  DragOverlay,
 } from '@dnd-kit/core';
+import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import {
   arrayMove,
   SortableContext,
@@ -19,7 +22,6 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import { createFileRoute } from '@tanstack/react-router';
 import { GripVertical, Circle, AlertCircle, CheckCircle } from 'lucide-react';
-import { toast } from 'sonner';
 
 import { Badge } from '@/components/ui/badge';
 import {
@@ -63,20 +65,10 @@ function AdminLayout() {
 
 function DraggableTable() {
   const [items, setItems] = useState<TableItem[]>([]);
+  const [activeId, setActiveId] = useState<string | null>(null);
 
   // 获取表格数据
-  const { data, isLoading, refetch } = api.todo.getTableData.useQuery();
-
-  // 更新排序的mutation
-  const updateOrderMutation = api.todo.updateItemOrder.useMutation({
-    onSuccess: () => {
-      toast.success('排序更新成功！');
-      refetch();
-    },
-    onError: (error) => {
-      toast.error('排序更新失败: ' + error.message);
-    },
-  });
+  const { data, isLoading } = api.todo.getTableData.useQuery();
 
   // 同步数据到本地状态
   useEffect(() => {
@@ -93,6 +85,11 @@ function DraggableTable() {
     })
   );
 
+  // 处理拖拽开始
+  function handleDragStart(event: DragStartEvent) {
+    setActiveId(event.active.id as string);
+  }
+
   // 处理拖拽结束
   function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event;
@@ -101,21 +98,11 @@ function DraggableTable() {
       setItems((items) => {
         const oldIndex = items.findIndex((item) => item.id === active.id);
         const newIndex = items.findIndex((item) => item.id === over?.id);
-
-        const newItems = arrayMove(items, oldIndex, newIndex);
-
-        // 更新order字段
-        const updates = newItems.map((item, index) => ({
-          id: item.id,
-          order: index + 1,
-        }));
-
-        // 发送更新请求
-        updateOrderMutation.mutate({ updates });
-
-        return newItems;
+        return arrayMove(items, oldIndex, newIndex);
       });
     }
+
+    setActiveId(null);
   }
 
   if (isLoading) {
@@ -127,20 +114,22 @@ function DraggableTable() {
   }
 
   return (
-    <div className="bg-white dark:bg-gray-900 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+    <div className="relative bg-white dark:bg-gray-900 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
       <div className="p-4 border-b border-gray-200 dark:border-gray-700">
         <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
           项目管理表格
         </h3>
         <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-          共 {items.length} 个项目 • 拖拽行来重新排序
+          共 {items.length} 个项目 • 拖拽行来重新排序（仅前端排序）
         </p>
       </div>
 
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}
+        onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
+        modifiers={[restrictToVerticalAxis]}
       >
         <SortableContext
           items={items.map((item) => item.id)}
@@ -170,16 +159,14 @@ function DraggableTable() {
             </Table>
           </div>
         </SortableContext>
+        <DragOverlay>
+          {activeId ? (
+            <div className="opacity-95">
+              <SortableRow item={items.find((item) => item.id === activeId)!} />
+            </div>
+          ) : null}
+        </DragOverlay>
       </DndContext>
-
-      {updateOrderMutation.isPending && (
-        <div className="absolute inset-0 bg-white/80 dark:bg-gray-900/80 flex items-center justify-center rounded-xl">
-          <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
-            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-indigo-600"></div>
-            正在更新排序...
-          </div>
-        </div>
-      )}
     </div>
   );
 }
